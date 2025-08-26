@@ -1,10 +1,10 @@
-# Plug-and-Play LLM Augmentation of FSM Navigation (ROS 2)
+# 🚀 Plug-and-Play LLM Augmentation of FSM Navigation (ROS 2)
 
-**Summary** — This repository contains the code and data for a 50 Hz finite-state machine (FSM) navigation stack **augmented** with asynchronous, validated **LLM** suggestions (no fine-tuning), with a deterministic <5 ms fallback. It includes three ROS 2 nodes (FSM, LLM, Validator/Fusion), per-trial CSV datasets, analysis scripts, and trajectory figures for a 5×5 m Maze Arena (with “approach” markers: accepted ✅ / rejected ❌).
+**Summary** — This repository contains the code and data for a 50 Hz finite‑state machine (FSM) navigation stack **augmented** with asynchronous, validated **LLM** suggestions (no fine‑tuning), with a deterministic \<5 ms fallback. It ships three ROS 2 nodes (FSM, LLM, Validator/Fusion), per‑trial CSV datasets, analysis scripts, and trajectory figures for a **5×5 m Maze Arena** with “approach” markers: accepted ✅ / rejected ❌.
 
 ---
 
-## Repository layout
+## 📁 Repository layout
 
 ```
 .
@@ -60,26 +60,26 @@
    └─ CITATION.bib
 ```
 
-> Place the CSVs under `data/` and figures under `figures/` exactly with those names for scripts and LaTeX to work out-of-the-box.
+> Place the CSVs under `data/` and figures under `figures/` with those exact names so scripts and LaTeX work out‑of‑the‑box.
 
 ---
 
-## Requirements
+## 🧰 Requirements
 
-- **ROS 2** (Humble recommended), `colcon`, `rclpy`
-- **Python ≥ 3.9**
+- **ROS 2** (Humble recommended), `colcon`, `rclpy`
+- **Python ≥ 3.9`
 - Python deps: `numpy`, `pandas`, `scipy`, `matplotlib`, `pydantic`, `pyyaml`, `transformers`, `torch` (CUDA optional)
 - **Hardware (real)**: TurtleBot3 (Burger/Waffle), Intel RealSense D435i
-- **GPU (optional)**: Jetson Orin / NVIDIA to accelerate DistilGPT-2 (not required)
+- **GPU (optional)**: Jetson Orin / NVIDIA to accelerate DistilGPT‑2 (not required)
 
-### Install (pip)
+### 📦 Install (pip)
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Install (conda)
+### 📦 Install (conda)
 
 ```bash
 conda env create -f environment.yml
@@ -88,7 +88,7 @@ conda activate llm-fsm
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 Main settings live in `config/params.yaml`:
 
@@ -135,9 +135,9 @@ qos:
 
 ---
 
-## Build & Run
+## 🏗️ Build & ▶️ Run
 
-### Build
+### 🛠️ Build
 
 ```bash
 cd ros2_ws
@@ -145,35 +145,35 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-### Run (Simulation / Gazebo)
+### 🧪 Run (Simulation / Gazebo)
 
 ```bash
 ros2 launch llm_nav_bringup sim.launch.py params:=../config/params.yaml
 ```
 
-### Run (Physical robot)
+### 🤖 Run (Physical robot)
 
 ```bash
 ros2 launch llm_nav_bringup real.launch.py params:=../config/params.yaml
 ```
 
-> **Safety** — The validator always clamps \((v_x,\omega_z)\) to configured bounds and discards late/malformed outputs. The 50 Hz loop never blocks; the fallback path is deterministic and <5 ms.
+> **🔒 Safety** — The validator always clamps \((v_x,\omega_z)\) to configured bounds and discards late/malformed outputs. The 50 Hz loop never blocks; the fallback path is deterministic and \<5 ms.
 
 ---
 
-## Nodes overview
+## 🧩 Nodes overview
 
-### `fsm_nav/node.py`
+### 🧭 `fsm_nav/node.py`
 - **Subscribes**: `/odom`, `/sign_detector/sign`
-- **Publishes**: `/cmd_vel_base` (50 Hz)
+- **Publishes**: `/cmd_vel_base` (50 Hz)
 - **Role**: deterministic FSM (`STRAIGHT`, `TURN_LEFT`, `TURN_RIGHT`, `STOP`) producing safe \((v_x,\omega_z)\).
 
-### `llm_sugg/node.py`
+### 🧠 `llm_sugg/node.py`
 - **Subscribes**: `/odom`, `/sign_detector/sign` (+ prompt context)
 - **Publishes**: `/llm_suggestion` (JSON), e.g. `{"vx": 0.22, "wz": 0.35, "mode": "approach", "ts": ...}`
-- **Latency**: ~170 ms mean (p95 ~327 ms in our setup); suggestions are **asynchronous** and may be discarded if late.
+- **Latency**: ~170 ms mean (p95 ~327 ms in our setup); suggestions are **asynchronous** and may be discarded if late.
 
-### `validator_fusion/node.py`
+### 🛡️ `validator_fusion/node.py`
 - **Subscribes**: `/cmd_vel_base`, `/llm_suggestion`
 - **Publishes**: `/cmd_vel`
 - **Validation**: JSON schema check, deadline check, kinematic bounds; optional projection to safe set.
@@ -183,21 +183,21 @@ ros2 launch llm_nav_bringup real.launch.py params:=../config/params.yaml
 
 ---
 
-## Data included
+## 📊 Data included
 
-- `data/llm_fsm_trials.csv` — per-trial dataset (sim+real; baseline vs LLM)
-- `data/aggregate_by_condition.csv` — condition-level aggregates
+- `data/llm_fsm_trials.csv` — per‑trial dataset (sim+real; baseline vs LLM)
+- `data/aggregate_by_condition.csv` — condition‑level aggregates
 - `data/stats_summary.csv` — formatted statistical summary
-- `data/traj_sim.csv`, `data/traj_real.csv` — 10 Hz trajectories (5×5)
-- `figures/traj_sim_overlay.png`, `figures/traj_real_overlay.png` — overlays with **approach** markers (accepted=green, rejected=red)
+- `data/traj_sim.csv`, `data/traj_real.csv` — 10 Hz trajectories (5×5)
+- `figures/traj_sim_overlay.png`, `figures/traj_real_overlay.png` — overlays with **approach** markers (accepted=🟢, rejected=🔴)
 
-> Trajectory overlays are strictly within \([0,5]\times[0,5]\). Markers are placed **before** each turn to reflect the “approach” phase.
+> Trajectory overlays are strictly within \([0,5]\times[0,5]\). Markers are placed **before** each turn to reflect the **approach** phase.
 
 ---
 
-## Analysis & Figures
+## 📈 Analysis & Figures
 
-### Recompute statistics
+### 🔬 Recompute statistics
 
 ```bash
 python scripts/analyze_stats.py --trials data/llm_fsm_trials.csv --out data/
@@ -207,9 +207,9 @@ Outputs:
 - `data/aggregate_by_condition.csv`
 - `data/stats_summary.csv`
 
-Includes Wilson 95% CIs for proportions, t-CIs for means, two-proportion z-test, Welch t-tests, Mann–Whitney, and effect sizes (Cohen’s h, Hedges’ g, RR with CI).
+Includes Wilson 95% CIs for proportions, t‑CIs for means, two‑proportion z‑test, Welch t‑tests, Mann–Whitney, and effect sizes (Cohen’s h, Hedges’ g, RR with CI).
 
-### Generate figures
+### 🖼️ Generate figures
 
 ```bash
 python scripts/plot_figures.py \
@@ -221,7 +221,7 @@ python scripts/plot_figures.py \
 
 Generates success/error/efficiency/latency plots and both trajectory overlays.
 
-### Regenerate trajectories (optional)
+### 🔁 Regenerate trajectories (optional)
 
 ```bash
 python scripts/make_trajectories.py --out-csv data/ --out-fig figures/
@@ -229,7 +229,7 @@ python scripts/make_trajectories.py --out-csv data/ --out-fig figures/
 
 ---
 
-## Reproduction (TL;DR)
+## ⏱️ Reproduction (TL;DR)
 
 ```bash
 # 1) Environment
@@ -251,52 +251,41 @@ python scripts/plot_figures.py --trials data/llm_fsm_trials.csv \
 
 ---
 
-## Suggested ablations
+## 🧪 Suggested ablations
 
 - Fusion weight sweep: \(\alpha \in \{0.0, 0.25, 0.5, 0.75, 1.0\}\)
 - Output formats: `{vx,wz}` vs. `{v_scale, wz_limit}`
 - Kinematic limits sensitivity: \([v_{\min},v_{\max}] \times [\omega_{\min},\omega_{\max}]\)
-- LLM runtime profile: mean/p95 latency, deadline-miss %, malformed JSON %, staleness
+- LLM runtime profile: mean/p95 latency, deadline‑miss %, malformed JSON %, staleness
 
 ---
 
-## License
+## ⚖️ License
 
 MIT (recommended). Provide your `LICENSE` at the repo root.
 
----
-
-## Citation
-
-Add to `docs/CITATION.bib` and update DOI/name as needed:
-
-```bibtex
-@article{Rojas2025LLMFSM,
-  title   = {Plug-and-Play LLM Augmentation of FSM Navigation: Validated Velocity Fusion at 50 Hz Without Fine-Tuning},
-  author  = {Rojas, Sebastian},
-  journal = {Results in Engineering},
-  year    = {2025},
-  doi     = {10.XXXX/zenodo.XXXXXXX},
-  url     = {https://github.com/<user>/<repo>}
-}
-```
 
 ---
 
-## AI & authorship disclosure
+## 🤖💬 AI & authorship disclosure
 
-DistilGPT-2 is used **on-device** to generate asynchronous suggestions which are validated before fusion; unsafe or late outputs are rejected. Documentation and analysis were authored by the repository owner; standard grammar/style tools may have been used for minor edits.
+DistilGPT‑2 is used **on‑device** to generate asynchronous suggestions which are validated before fusion; unsafe or late outputs are rejected. Documentation and analysis were authored by the repository owner; standard grammar/style tools may have been used for minor edits.
 
 ---
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
 - **High LLM latency** — reduce `max_new_tokens`, use `device=cuda` if available, or relax `deadline_ms` (without compromising safety).  
 - **Yaw oscillation** — lower `alpha`, reduce `w_max`, enable smoothing in the validator.  
 - **Frequent invalid suggestions** — refine prompt template and schema checks; strengthen validation thresholds.  
-- **Gazebo vs. real gap** — adjust `qos.yaml` and topic reliability for `/odom` and `/cmd_vel*` topics.
+- **Gazebo vs real gap** — adjust `qos.yaml` and topic reliability for `/odom` and `/cmd_vel*` topics.
 
 ---
+
+## 🤝 Contributing
+
+PRs and issues are welcome. Please follow PEP 8/black formatting, add minimal tests (sim), and use Git LFS for large artifacts (models, heavy CSV/PNG).
+
 
 ## Contributing
 
